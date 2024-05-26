@@ -1,0 +1,26 @@
+.form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 24px 0;
+}
+
+.formStart {
+    justify-content: flex-start;
+    align-items: flex-start
+}
+
+.notFound {
+    color: #787878;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+@media screen and (max-width: 768px) {
+    .form {
+        width: 100%;
+        display: flex;
+        /* justify-content: space-around; */
+       /* gap: 30px; */
+    }
+}

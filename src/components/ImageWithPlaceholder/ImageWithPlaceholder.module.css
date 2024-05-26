@@ -1,0 +1,25 @@
+
+
+.container {
+    width: 204px;
+    height: 204px;
+    background-color: white;
+    border: 1px solid grey;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@media screen and (max-width: 568px) {
+    .container {
+        width: 114px;
+        height: 114px;
+    }
+}
