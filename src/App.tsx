@@ -23,39 +23,34 @@ function App() {
         classes.push('main_container_start')
 
     }
-    // useEffect для прокрутки, чтобы загрузить больше изображений при достижении конца страницы
     useEffect(() => {
         const handleScroll = () => {
-            // Загрузите больше данных только если данные уже были загружены и нет текущей загрузки
             if (data?.length && !isLoading && (window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
                 setPage(prevPage => {
                     const nextPage = prevPage + 1;
-                    fetchPictures(query, nextPage); // Убедитесь, что у вас есть searchQuery в доступе
+                    fetchPictures(query, nextPage);
                     return nextPage;
                 });
             }
         };
 
-        // Установить обработчик события на прокрутку, если данные уже были загружены
         if (data?.length > 0) {
             window.addEventListener('scroll', handleScroll);
         }
 
-        // Очистка обработчика
         return () => {
             if (data?.length > 0) {
                 window.removeEventListener('scroll', handleScroll);
             }
         };
-    }, [data?.length, isLoading, query]); // Активировать этот useEffect при изменении данных или состояния загрузки
+    }, [data?.length, isLoading, query]);
 
     useEffect(() => {
         calculateImagesPerPage();
-        // Добавьте слушатель событий для обработки изменений размера окна
+
         window.addEventListener('resize', calculateImagesPerPage);
 
         return () => {
-            // Удалите слушатель события при размонтировании компонента
             window.removeEventListener('resize', calculateImagesPerPage);
         }
     }, []);
@@ -104,7 +99,6 @@ function App() {
         setData([])
         if (query) {
             setIsLoading(true);
-            // Вы можете настроить это значение в зависимости от того, сколько картинок вы хотите получать за один запрос
             const pagesToLoad = Math.ceil(imagePerPage / 10);
 
             for (let i = 1; i <= pagesToLoad; i++) {
