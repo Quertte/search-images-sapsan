@@ -8,7 +8,6 @@ function App() {
     const [query, setQuery] = useState<string>('')
     const [isLoading, setIsLoading] = useState(false);
     const [, setPage] = useState(1);
-    const [imagePerPage, setImagePerPage] = useState(0);
     const [totalImages, setTotalImages] = useState(0);
     const [isNotFound, setIsNotFound] = useState(false)
 
@@ -23,6 +22,31 @@ function App() {
         classes.push('main_container_start')
 
     }
+
+    const fetchPictures = useCallback(async (query: string, i: number) => {
+        setIsLoading(true);
+        try {
+
+            const response = await fetch(`https://api.unsplash.com/search/photos?client_id=Ip0XA55zY7b7-d19osq1L5btGg-YCeDZVpnnJjXqHxs&query=${query}&page=${i}`);
+            const newData = await response.json();
+            if (newData.total > 0) {
+                setIsNotFound(false)
+                const photos = newData.results.map((el: any) => el.urls);
+                setData((currentData) => [...currentData, ...photos]);
+                setTotalImages(newData.total);
+            } else {
+                setIsNotFound(true)
+            }
+        } catch (error) {
+            console.error("Error fetching pictures:", error);
+            setIsNotFound(true)
+
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+
     useEffect(() => {
         const handleScroll = () => {
             if (data?.length && !isLoading && (window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
@@ -43,77 +67,20 @@ function App() {
                 window.removeEventListener('scroll', handleScroll);
             }
         };
-    }, [data?.length, isLoading, query]);
-
-    useEffect(() => {
-        calculateImagesPerPage();
-
-        window.addEventListener('resize', calculateImagesPerPage);
-
-        return () => {
-            window.removeEventListener('resize', calculateImagesPerPage);
-        }
-    }, []);
-
-    const calculateImagesPerPage = () => {
-        const mobileBreakpoint = 768;
-        const imagePerRow = window.innerWidth <= mobileBreakpoint ? 3 : 6;
-        const imageHeight = window.innerWidth <= mobileBreakpoint ? 114 : 204;
-        const rowsPerPage = Math.floor(window.innerHeight / imageHeight);
-        setImagePerPage(imagePerRow * rowsPerPage);
-    };
-
-    const fetchPictures = async (query: string, i: number) => {
-        setIsLoading(true);
-        try {
-
-            const response = await fetch(`https://api.unsplash.com/search/photos?client_id=Ip0XA55zY7b7-d19osq1L5btGg-YCeDZVpnnJjXqHxs&query=${query}&page=${i}`);
-            const newData = await response.json();
-            console.log(newData, 'newData')
-            if (newData.total > 0) {
-                console.log('1')
-                setIsNotFound(false)
-                const photos = newData.results.map((el: any) => el.urls);
-
-                setData((currentData) => [...currentData, ...photos]);
-
-                setTotalImages(newData.total);
-
-            } else {
-                console.log('2')
-                setIsNotFound(true)
-            }
-
-
-
-        } catch (error) {
-            console.error("Error fetching pictures:", error);
-            setIsNotFound(true)
-
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleSearch = useCallback(async () => {
-        setData([])
-        if (query) {
-            setIsLoading(true);
-            const pagesToLoad = Math.ceil(imagePerPage / 10);
-
-            for (let i = 1; i <= pagesToLoad; i++) {
-                await fetchPictures(query, i);
-            }
-        }
-
-
-        setIsLoading(false);
-    }, [imagePerPage, query])
+    }, [data?.length, isLoading, query, fetchPictures]);
 
 
     return (
         <div className={classes.join(' ')}>
-            <Form handleSearch={handleSearch} query={query} setQuery={setQuery} data={data} isNotFound={isNotFound} />
+            <Form
+                query={query}
+                setQuery={setQuery}
+                data={data}
+                isNotFound={isNotFound}
+                setIsLoading={setIsLoading}
+                fetchPictures={fetchPictures}
+                setData={setData}
+            />
             <Gallery data={data} isLoading={isLoading} totalImages={totalImages} isNotFound={isNotFound} />
         </div>
     )
