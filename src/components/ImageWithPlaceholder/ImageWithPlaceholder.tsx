@@ -3,7 +3,7 @@ import classes from './ImageWithPlaceholder.module.css'
 
 interface ImageWithPlaceholder {
     src: string,
-    onClick: () => void
+    onClick?: () => void
 }
 
 export const ImageWithPlaceholder: FC<ImageWithPlaceholder> = ({ src, onClick }) => (

@@ -16,14 +16,17 @@ export const Gallery: FC<GalleryProps> = memo(({ data, totalImages, isLoading, i
     const [activeImage, setActiveImage] = useState<string | null>(null);
 
     const handleImageClick = (url: string) => {
+        console.log('Мухаха')
         setActiveImage(url)
     }
+
+
     return (
         <>
             {!isNotFound ?
-                <div className={classes.gallery}>
+                <div className={classes.gallery} onClick={e => handleImageClick((e.target as HTMLImageElement).currentSrc)}>
                     {data?.length > 0 && data.map((el, index) => (
-                        <ImageWithPlaceholder key={index} src={el.small} onClick={() => handleImageClick(el.small)} />
+                        <ImageWithPlaceholder key={index} src={el.small} />
                     ))
                     }
 
